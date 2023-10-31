@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+            width: 400px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .form-group input[type="text"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .form-group button {
+            background-color: #4caf50;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 12px 20px;
+        }
+
+        table {
+            margin: 20px auto;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Statistics Calculator</h1>
+        <div class="form-group">
+            <label for="classIntervals">Enter class intervals (comma-separated):</label>
+            <input type="text" id="classIntervals" name="classIntervals" required>
+        </div>
+        <div class="form-group">
+            <label for="frequencies">Enter frequencies (comma-separated):</label>
+            <input type="text" id="frequencies" name="frequencies" required>
+        </div>
+        <div class="form-group">
+            <button type="button" onclick="calculateStatistics()">Calculate</button>
+        </div>
+        <table>
+            <tr>
+                <th>Class Interval</th>
+                <th>Midpoint</th>
+                <th>Frequency</th>
+            </tr>
+            <tbody id="resultTable"></tbody>
+        </table>
+        <div class="result">
+            <p>Mean: <span id="mean"></span></p>
+            <p>Variance: <span id="variance"></span></p>
+            <p>Standard Deviation: <span id="standardDeviation"></span></p>
+        </div>
+        <div class="formulas">
+            <h2>Formulas:</h2>
+            <p>Mean: \( \text{Mean} = \frac{\sum(\text{midpoint} \times \text{frequency})}{\sum \text{frequency}} \)</p>
+            <p>Variance: \( \text{Variance} = \frac{\sum(\text{frequency} \times (\text{midpoint} - \text{mean})^2)}{\sum \text{frequency}} \)</p>
+            <p>Standard Deviation: \( \text{Standard Deviation} = \sqrt{\text{Variance}} \)</p>
+        </div>
+    </div>
+
+    <script>
+        function calculateStatistics() {
+            var classIntervalsInput = document.getElementById('classIntervals').value;
+            var frequenciesInput = document.getElementById('frequencies').value;
+            var classIntervalsArray = classIntervalsInput.split(',').map(interval => interval.trim());
+            var frequenciesArray = frequenciesInput.split(',').map(Number);
+
+            var midpoints = [];
+            for (var i = 0; i < classIntervalsArray.length; i++) {
+                var interval = classIntervalsArray[i].split('-').map(Number);
+                midpoints.push((interval[0] + interval[1]) / 2);
+            }
+
+            var sum = 0;
+            var totalFrequency = 0;
+            for (var i = 0; i < midpoints.length; i++) {
+                sum += midpoints[i] * frequenciesArray[i];
+                totalFrequency += frequenciesArray[i];
+            }
+
+            var mean = sum / totalFrequency;
+
+            var squaredDifferencesSum = 0;
+            for (var i = 0; i < midpoints.length; i++) {
+                squaredDifferencesSum += frequenciesArray[i] * Math.pow(midpoints[i] - mean, 2);
+            }
+
+            var variance = squaredDifferencesSum / totalFrequency;
+            var standardDeviation = Math.sqrt(variance);
+
+            document.getElementById('mean').textContent = mean.toFixed(2);
+            document.getElementById('variance').textContent = variance.toFixed(2);
+            document.getElementById('standardDeviation').textContent = standardDeviation.toFixed(2);
+
+            var resultTable = document.getElementById('resultTable');
+            resultTable.innerHTML = '';
+            for (var i = 0; i < midpoints.length; i++) {
+                var row = document.createElement('tr');
+                var classIntervalCell = document.createElement('td');
+                classIntervalCell.textContent = classIntervalsArray[i];
+                var midpointCell = document.createElement('td');
+                midpointCell.textContent = midpoints[i];
+                var frequencyCell = document.createElement('td');
+                frequencyCell.textContent = frequenciesArray[i];
+                row.appendChild(classIntervalCell);
+                row.appendChild(midpointCell);
+                row.appendChild(frequencyCell);
+                resultTable.appendChild(row);
+            }
+        }
+    </script>
+</body>
+
+</html>
